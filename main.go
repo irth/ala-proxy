@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -73,12 +74,36 @@ func (p *PacmanArchiveProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var upstream string
+	flag.StringVar(&upstream, "upstream", "https://arch.sakamoto.pl/$repo/os/$arch", "upstream repo url")
+
+	var archive string
+	flag.StringVar(&archive, "archive", "https://archive.archlinux.org", "archive url")
+
+	var listen string
+	flag.StringVar(&listen, "listen", ":8080", "listen address")
+
+	var meow bool
+	flag.BoolVar(&meow, "meow", false, "meow")
+
+	flag.Parse()
+
 	proxy := PacmanArchiveProxy{
-		RepoURL:    "https://mirror.rackspace.com/archlinux/$repo/os/$arch",
-		ArchiveURL: "https://archive.archlinux.org",
+		RepoURL:    upstream,
+		ArchiveURL: archive,
 	}
 
-	log.Println("haiiiii :3")
-	http.ListenAndServe(":8080", &proxy)
+	if meow {
+		log.Println("mrrp :3\n")
+	}
 
+	log.Println("starting")
+	log.Printf("listening on %s", listen)
+	log.Printf("upstream: %s", upstream)
+	log.Printf("archive: %s", archive)
+
+	log.Println("To use, set /etc/pacman.d/mirrorlist so that the first line is:")
+	log.Println("Server = http://<address of this proxy>/$repo/os/$arch")
+
+	http.ListenAndServe(listen, &proxy)
 }
