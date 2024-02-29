@@ -24,7 +24,7 @@ var ErrNotAPackage = fmt.Errorf("not a package")
 
 func parsePackageURL(url string) (*PackageRequest, error) {
 	// check if it's a package, other stuff is not archived in ALA
-	isPackage, err := regexp.MatchString(`.*\.pkg\.tar\.\w+`, url)
+	isPackage, err := regexp.MatchString(`.*\.pkg\.tar\..*`, url)
 	if err != nil {
 		return nil, err
 	}
